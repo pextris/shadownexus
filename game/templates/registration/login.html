@@ -1,0 +1,23 @@
+<!-- game/templates/registration/login.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShadowNexus Login</title>
+</head>
+<body style="background:black; color:lime; font-family:monospace; padding:40px;">
+<pre>
+
+LOGIN TO THE SHADOWNEXUS MAINFRAME
+</pre>
+
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <label>Username: <input type="text" name="username" required></label><br><br>
+  <label>Password: <input type="password" name="password" required></label><br><br>
+  <button type="submit">Enter</button>
+</form>
+
+</body>
+</html>

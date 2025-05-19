@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dialtone Den</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: black;
+            color: cyan;
+            padding: 2rem;
+        }
+        a {
+            color: lime;
+            text-decoration: none;
+        }
+        .log {
+            color: yellow;
+            margin: 1rem 0;
+        }
+        .post {
+            color: lightgray;
+            margin-top: 1em;
+            border-top: 1px dashed cyan;
+            padding-top: 0.5em;
+        }
+        .form-area {
+            margin-top: 2em;
+        }
+        .header {
+            color: magenta;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">== DIALTONE DEN INTERNET CAFÉ ==</div>
+
+    <p>Welcome, {{ player.user.username }}.</p>
+    <p>
+        Health: {{ player.health }} / {{ player.max_health }}<br>
+        SysCred: {{ player.syscred }} ₿<br>
+        Turns Remaining: {{ player.turns_remaining }}<br>
+        XP: {{ player.experience }} / {{ xp_needed_for_next_level }}
+    </p>
+
+    {% if message %}
+        <div class="log">>>> {{ message }}</div>
+    {% endif %}
+
+    <p><a href="?action=heal">[1] Restore Health (10 SysCred)</a></p>
+    <p><a href="/mainframe/">[2] Return to Mainframe</a></p>
+    <p><a href="/accounts/logout/">[3] Logout</a></p>
+
+    <div class="form-area">
+        <h2>📬 Leave a Message</h2>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="content" rows="4" cols="60" placeholder="Type your message..."></textarea><br>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>🧵 Message Board</h2>
+        {% for post in posts %}
+            <div class="post">
+                <strong>{{ post.player.user.username }}</strong> @ {{ post.timestamp|date:"Y-m-d H:i" }}<br>
+                {{ post.content|linebreaksbr }}
+            </div>
+        {% empty %}
+            <p>No messages yet.</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
