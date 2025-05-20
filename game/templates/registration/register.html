@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - ShadowNexus</title>
+</head>
+<body style="background:black; color:lime; font-family:monospace; padding: 2rem;">
+
+<h1>REGISTER TO ACCESS SHADOWNEXUS</h1>
+
+<form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">CONNECT</button>
+</form>
+
+<p style="color:gray;">Already jacked in? <a href="{% url 'login' %}" style="color:cyan;">Log in</a></p>
+
+</body>
+</html>

@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils.timezone import now
 from .models import Player, Enemy, Post
+from .forms import CustomRegisterForm, EmailLoginForm
 from .services.combat import hack_battle
 
 def index(request):
@@ -21,7 +23,6 @@ def index(request):
 def mainframe(request):
     player = Player.objects.get(user=request.user)
 
-    # Reset daily turns
     if player.last_turn_reset < now().date():
         player.turns_remaining = 10
         player.last_turn_reset = now().date()
@@ -49,7 +50,6 @@ def mainframe(request):
 def dialtone_den(request):
     player = Player.objects.get(user=request.user)
 
-    # Reset daily turns
     if player.last_turn_reset < now().date():
         player.turns_remaining = 10
         player.last_turn_reset = now().date()
@@ -65,9 +65,8 @@ def dialtone_den(request):
         elif player.health >= player.max_health:
             message = "You're already fully healed."
         else:
-            message = "Not enough gold to buy a coffee."
+            message = "Not enough credits to buy a coffee."
 
-    # Handle message board post
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
@@ -81,3 +80,28 @@ def dialtone_den(request):
         "message": message,
         "posts": posts
     })
+
+def register(request):
+    if request.method == 'POST':
+        form = CustomRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            Player.objects.create(user=user)
+            auth_login(request, user)
+            return redirect('mainframe')
+    else:
+        form = CustomRegisterForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+def login_view(request):
+    form = EmailLoginForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.get_user()
+        auth_login(request, user)
+        return redirect('mainframe')
+
+    return render(request, 'registration/login.html', {'form': form})
+
+def logout_view(request):
+    auth_logout(request)
+    return render(request, 'registration/logout.html')
