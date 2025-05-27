@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShadowNexus Stats</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: monospace;
+            padding: 2rem;
+            text-shadow: 0 0 5px #00FF00;
+        }
+
+        a {
+            color: #00FFFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #FFFFFF;
+        }
+
+        .divider {
+            color: #009900;
+        }
+    </style>
+</head>
+<body>
+    <h1>PLAYER STATS: {{ player.handle|upper }}</h1>
+
+    <pre>
+Level:         {{ player.level }}
+XP:            {{ player.xp }}
+Health:        {{ player.health }} / {{ player.max_health }}
+SysCred:       {{ player.syscred }}
+Turns Left:    {{ player.turns_remaining }}
+Last Reset:    {{ player.last_turn_reset }}
+
+Class:         {{ player.hacker_class }}
+Title:         {{ player.title }}
+Faction:       {{ player.faction }}
+
+Achievements:
+{% if player.achievements %}
+{% for achievement in player.achievements %}
+ - {{ achievement }}
+{% endfor %}
+{% else %}
+ - None yet
+{% endif %}
+    </pre>
+
+    <p class="divider">------------------------------------------</p>
+    <p><a href="{% url 'mainframe' %}">[ BACK TO MAINFRAME ]</a></p>
+</body>
+</html>

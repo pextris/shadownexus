@@ -1,57 +1,85 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.utils.timezone import now
-import random
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.utils import timezone
+
+FACTION_CHOICES = [
+    ("white_hat", "White Hat"),
+    ("black_hat", "Black Hat"),
+    ("grey_hat", "Grey Hat"),
+    ("nullsec", "NullSec"),
+    ("init6", "Init6"),
+    ("obfuscated", "The Obfuscated"),
+    ("keepers", "The Keepers"),
+]
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("Email is required")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(email, password, **extra_fields)
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    handle = models.CharField(max_length=30, unique=True)
+    faction = models.CharField(max_length=20, choices=FACTION_CHOICES, default="grey_hat")
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    date_joined = models.DateTimeField(default=timezone.now)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    def __str__(self):
+        return self.email
+
+class Location(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.SlugField(unique=True)
+    description = models.TextField()
+    connections = models.ManyToManyField("self", symmetrical=False, blank=True)
+    is_safe_zone = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 class Player(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    level = models.IntegerField(default=1)
-    experience = models.IntegerField(default=0)
-    syscred = models.IntegerField(default=50)  # Custom currency
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     health = models.IntegerField(default=100)
     max_health = models.IntegerField(default=100)
+    syscred = models.IntegerField(default=50)
     turns_remaining = models.IntegerField(default=10)
-    last_turn_reset = models.DateField(default=now)
+    last_turn_reset = models.DateField(default=timezone.now)
+    level = models.IntegerField(default=1)
+    xp = models.IntegerField(default=0)
+    current_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.username} (Level {self.level})"
-
-    def reset_turns_if_new_day(self):
-        if self.last_turn_reset < now().date():
-            self.turns_remaining = 10
-            self.last_turn_reset = now().date()
-            self.save()
-
-    def gain_experience(self, amount):
-        self.experience += amount
-        while self.experience >= self.xp_needed_for_next_level():
-            self.level_up()
-        self.save()
-
-    def xp_needed_for_next_level(self):
-        return self.level * 100  # Level 1: 100 XP, Level 2: 200 XP, etc.
-
-    def level_up(self):
-        self.level += 1
-        self.max_health += 10
-        self.health = self.max_health  # Fully heal on level up
+        return self.user.handle
 
 class Enemy(models.Model):
-    name = models.CharField(max_length=50)
-    level = models.IntegerField()
-    health = models.IntegerField()
-    attack = models.IntegerField()
-    defense = models.IntegerField()
-    syscred_drop = models.IntegerField()
-    xp_drop = models.IntegerField()
+    name = models.CharField(max_length=100)
+    level = models.IntegerField(default=1)
+    health = models.IntegerField(default=100)
+    damage = models.IntegerField(default=10)
 
     def __str__(self):
-        return f"{self.name} (Lv {self.level})"
+        return self.name
 
 class Post(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Post by {self.player.user.username} at {self.timestamp.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.player.user.handle}: {self.message[:30]}..."

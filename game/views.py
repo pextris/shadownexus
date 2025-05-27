@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, logout as auth_logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.utils.timezone import now
-from .models import Player, Enemy, Post
+from .models import Player, Enemy, Post, Location
 from .forms import CustomRegisterForm, EmailLoginForm
 from .services.combat import hack_battle
 
@@ -21,7 +21,7 @@ def index(request):
 
 @login_required
 def mainframe(request):
-    player = Player.objects.get(user=request.user)
+    player, created = Player.objects.get_or_create(user=request.user)
 
     if player.last_turn_reset < now().date():
         player.turns_remaining = 10
@@ -29,14 +29,16 @@ def mainframe(request):
         player.save()
 
     if player.turns_remaining <= 0:
-        return render(request, "mainframe.html", {
-            "log": ["You’re out of turns for today. Come back tomorrow."]
+        return render(request, "game/mainframe.html", {
+            "log": ["You’re out of turns for today. Come back tomorrow."],
+            "player": player,
         })
 
     enemy = Enemy.objects.order_by('?').first()
     if not enemy:
-        return render(request, "mainframe.html", {
-            "log": ["No threats detected. Network is quiet..."]
+        return render(request, "game/mainframe.html", {
+            "log": ["No threats detected. Network is quiet..."],
+            "player": player,
         })
 
     log = hack_battle(player, enemy)
@@ -44,7 +46,7 @@ def mainframe(request):
     player.save()
 
     log.insert(0, f"> You have {player.turns_remaining} turns left today.")
-    return render(request, "mainframe.html", {"log": log})
+    return render(request, "game/mainframe.html", {"log": log, "player": player, "enemy": enemy})
 
 @login_required
 def dialtone_den(request):
@@ -70,12 +72,12 @@ def dialtone_den(request):
     if request.method == "POST":
         content = request.POST.get("content")
         if content:
-            Post.objects.create(player=player, content=content)
+            Post.objects.create(player=player, message=content)
             return redirect('dialtone_den')
 
-    posts = Post.objects.all().order_by('-timestamp')[:20]
+    posts = Post.objects.all().order_by('-created_at')[:20]
 
-    return render(request, "dialtone_den.html", {
+    return render(request, "game/dialtone_den.html", {
         "player": player,
         "message": message,
         "posts": posts
@@ -105,3 +107,30 @@ def login_view(request):
 def logout_view(request):
     auth_logout(request)
     return render(request, 'registration/logout.html')
+
+@login_required
+def player_stats(request):
+    player = Player.objects.get(user=request.user)
+    return render(request, "game/stats.html", {"player": player})
+
+@login_required
+def explore(request):
+    player = Player.objects.get(user=request.user)
+    current_location = player.current_location
+
+    if request.method == "POST":
+        new_location_id = request.POST.get("move_to")
+        if new_location_id:
+            new_location = get_object_or_404(Location, id=new_location_id)
+            if new_location in current_location.connections.all():
+                player.current_location = new_location
+                player.save()
+                current_location = new_location
+
+    connections = current_location.connections.all() if current_location else []
+
+    return render(request, "game/explore.html", {
+        "player": player,
+        "current_location": current_location,
+        "connections": connections
+    })

@@ -1,20 +1,100 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Register - ShadowNexus</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: monospace;
+            padding: 20px;
+        }
+
+        h1 {
+            color: lime;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: black;
+            height: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            background-color: lime;
+            width: 0;
+            height: 100%;
+            animation: load 2s ease-out forwards;
+        }
+
+        @keyframes load {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        input, button {
+            background-color: black;
+            border: 1px solid lime;
+            color: lime;
+            font-family: monospace;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: lime;
+            color: black;
+        }
+
+        a {
+            color: cyan;
+        }
+
+        .faction-options {
+            white-space: pre;
+        }
+    </style>
 </head>
-<body style="background:black; color:lime; font-family:monospace; padding: 2rem;">
+<body>
 
 <h1>REGISTER TO ACCESS SHADOWNEXUS</h1>
 
+<div class="progress-bar"><div class="progress"></div></div>
+
+<p>Initializing ShadowNexus Protocols...</p>
+
 <form method="post" action="{% url 'register' %}">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <p>Email:<br>{{ form.email }}</p>
+
+    <p>Handle:<br>{{ form.handle }}</p>
+
+    <p>Select Your Faction (type a number):<br>
+        <div class="faction-options">
+1 - White Hat         - Ethical defenders of cyberspace.
+2 - Black Hat         - Rebels, pirates, and masters of digital shadowplay.
+3 - Grey Hat          - Hack the planet... but with a conscience.
+4 - NullSec           - Silent, deep dwellers in the digital abyss. Speak rarely, strike precisely.
+5 - Init6             - The vanguard of innovation. Debuggers of reality.
+6 - The Obfuscated    - They react. Not to logic. But to patterns. Chaos encoded.
+7 - The Keepers       - Archivists of the forgotten net. They hoard old knowledge like gold.
+        </div>
+    </p>
+    <p>Enter Faction Number:<br><input type="text" name="faction" required></p>
+
+    <p>Password:<br>{{ form.password1 }}</p>
+
+    <p>Confirm Password:<br>{{ form.password2 }}</p>
+
     <button type="submit">CONNECT</button>
 </form>
 
-<p style="color:gray;">Already jacked in? <a href="{% url 'login' %}" style="color:cyan;">Log in</a></p>
+<p style="color:gray;">Already jacked in? <a href="{% url 'login' %}">Log in here</a></p>
 
 </body>
 </html>

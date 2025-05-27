@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mainframe - ShadowNexus</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .terminal-box {
+            border: 1px solid lime;
+            padding: 20px;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            height: 70vh;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: black;
+            color: lime;
+            border: 1px solid lime;
+            padding: 5px 10px;
+            font-family: monospace;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: lime;
+            color: black;
+        }
+        a {
+            color: cyan;
+        }
+    </style>
+</head>
+<body>
+
+<h1>MAINFRAME ACCESS GRANTED</h1>
+
+<div class="terminal-box">
+{% for line in log %}
+> {{ line }}
+{% endfor %}
+</div>
+
+<p><a href="{% url 'dialtone_den' %}" class="btn">Go to /dialtone-den/</a></p>
+<p><a href="{% url 'player_stats' %}" class="btn">View Your Stats</a></p>
+<p><a href="{% url 'logout' %}" class="btn">Disconnect</a></p>
+
+</body>
+</html>

@@ -3,25 +3,29 @@ import random
 def hack_battle(player, enemy):
     log = []
 
-    while player.health > 0 and enemy.health > 0:
-        player_damage = max(0, player.level + random.randint(1, 8) - enemy.defense)
-        enemy.health -= player_damage
-        log.append(f">> You breach {enemy.name}'s defenses for {player_damage} damage.")
+    player_attack = random.randint(10, 25)
+    enemy_attack = random.randint(5, enemy.damage)
 
-        if enemy.health <= 0:
-            log.append(f"!! {enemy.name} has been derezzed.")
-            player.syscred += enemy.syscred_drop
-            player.gain_experience(enemy.xp_drop)
-            log.append(f"+ {enemy.syscred_drop} SysCred earned.")
-            log.append(f"+ {enemy.xp_drop} XP earned.")
-            break
+    # Player attacks first
+    log.append(f"> You attack the {enemy.name} and deal {player_attack} damage.")
 
-        enemy_damage = max(0, enemy.attack + random.randint(1, 6) - player.level)
-        player.health -= enemy_damage
-        log.append(f"<< {enemy.name} counterattacks for {enemy_damage} damage!")
+    enemy.health -= player_attack
+    if enemy.health <= 0:
+        log.append(f"> {enemy.name} has been neutralized.")
+        player.syscred += enemy.syscred_drop
+        level_ups = player.gain_xp(enemy.xp_reward)
+        player.save()
+        log.append(f"> You gained {enemy.syscred_drop} SysCred and {enemy.xp_reward} XP.")
+        if level_ups > 0:
+            log.append(f"> LEVEL UP! You are now Level {player.level}. Max health increased.")
+        return log
 
-        if player.health <= 0:
-            log.append("!! You’ve been firewalled into oblivion.")
-            break
+    # Enemy survives and counter-attacks
+    log.append(f"> {enemy.name} counter-attacks and deals {enemy_attack} damage.")
+    player.health -= enemy_attack
+    if player.health <= 0:
+        player.health = 0
+        log.append("> You have been defeated. Disconnect and recover.")
 
+    player.save()
     return log

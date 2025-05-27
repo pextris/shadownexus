@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Explore - ShadowNexus</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: monospace;
+            padding: 2rem;
+        }
+        .btn {
+            color: black;
+            background: lime;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>📡 ShadowNexus :: Explore</h1>
+    {% if current_location %}
+        <p><strong>You are at:</strong> {{ current_location.name }}</p>
+        <p>{{ current_location.description }}</p>
+
+        {% if connections %}
+            <form method="post">
+                {% csrf_token %}
+                <p>Move to:</p>
+                {% for loc in connections %}
+                    <button type="submit" class="btn" name="move_to" value="{{ loc.id }}">{{ loc.name }}</button>
+                {% endfor %}
+            </form>
+        {% else %}
+            <p>No known connections from here.</p>
+        {% endif %}
+    {% else %}
+        <p>You are lost in the network.</p>
+    {% endif %}
+
+    <p><a href="/mainframe/" style="color: cyan;">⮐ Return to Mainframe</a></p>
+</body>
+</html>
