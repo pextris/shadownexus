@@ -1,53 +1,76 @@
-# 🧠 ShadowNexus
-
-> A terminal-style cyberpunk RPG built with Django.  
-> Hack the decay. Discover the echoes. What decays, still runs.
+# 🧠 ShadowNexus  
+_A terminal-style cyberpunk RPG built with Django._  
+**Hack the decay. Discover the echoes. What decays, still runs.**
 
 ---
 
-## ⚙️ Technology Stack
+## ⚙️ Tech Stack
 
-**Framework:** Django 5.x  
-**Language:** Python 3.12  
-**Database:** SQLite (dev), PostgreSQL (future)  
-**Frontend:** Django Templates, Monospace UI, Custom CSS  
-**Authentication:** Built-in Django auth with terminal-themed registration  
-**Version Control:** Git + GitHub  
-**Optional Integrations:**  
-- 2FA (planned)
-- Real-world CSV-based threat data (future event triggers)
-- Chiptune music via `.mod` or `.ogg` audio bundles
+- **Framework**: Django 5.x  
+- **Language**: Python 3.12  
+- **Database**: SQLite (dev), PostgreSQL (planned)  
+- **Frontend**: Django Templates + Custom CSS (Monospace/Terminal style)  
+- **Auth**: Django + custom email login  
+- **Versioning**: Git + GitHub  
+
+### Optional / Planned Integrations:
+- 🔐 2FA (Two-Factor Authentication)  
+- 🧷 Real-world threat CSVs triggering in-game events  
+- 🎵 Chiptune .mod/.ogg soundtrack packs  
+- 🎮 Keyboard navigation for terminal UI  
 
 ---
 
 ## 🌐 Lore Architecture
 
-The ShadowNexus is a fractured digital landscape built on the myth of a forgotten sysadmin deity named `grrtsyr`.
+**The ShadowNexus is a decaying digital mythos haunted by echoes of a sysadmin deity known as `grrtsyr`.**  
+Its network spans broken protocols, corrupted memory, and glitch-born entities.
 
 ### Zones
-- `/mainframe/` – the battle core; corrupted threads and hostile syscalls
-- `/den/` – safe space node; styled like an internet café with ANSI graffiti
-- `/deepstack/` – recursive memory basin where logic loops are real
-- `/vault/` – glitched archive; prophecy fragments and shadow logs
-- `/tmp/` – ghost sessions and discarded memory
-- `/uplink/` (planned) – temporary link to external realities
+| Path | Description |
+|------|-------------|
+| `/mainframe/` | Battle core. Home of hostile syscalls and corrupted threads.  
+| `/den/`       | Safe node styled like a virtual café. ANSI graffiti + message board.  
+| `/deepstack/` | Recursive logic basin. Home to the Patch Spiral and loop daemons.  
+| `/vault/`     | An archive of corrupted prophecy fragments and glitched man pages.  
+| `/tmp/`       | Volatile ghost sessions and disposable memory.  
+| `/uplink/`    | (Planned) Bridge to external network echoes.  
 
 ### Entities
-- **grrtsyr** – the Rootless Architect; never seen, only echoed
-- **Bangurt the SysAdmin** – exile of the Patchrats
-- **Eogprod the Music Gnome** – daemon of corrupted sound memory
-- **Stackminds**, **Clone Threads**, **The Patch Spiral** – inhabitants of `/deepstack/`
+- **grrtsyr** – The Rootless Architect; seen only in corrupted man pages  
+- **Bangurt** – Exiled SysAdmin who believes grrtsyr lives  
+- **Eogprod** – Gnome-daemon who stores broken .mod files in memory  
+- **Patch Spiral**, **Clone Threads**, **Stackminds** – Inhabit `/deepstack/`  
 
 ---
 
-## 🎮 Gameplay Features
+## 🕹 Gameplay
 
-- User login + terminal-style registration
-- Auto-generated player profiles + persistent progression
-- Turn-based exploration and events (in dev)
-- Zone-based routing and lore triggers
-- Command-style UI (click now, keyboard later)
-- Built for expansion (factions, quests, combat, currencies)
+- ✅ Email-based login and terminal-style registration  
+- ✅ Auto-generated player profiles with persistent stats  
+- ✅ Turn-based enemy encounters (/mainframe/)  
+- ✅ Fully explorable map: zones + locations within them  
+- ✅ In-world messaging system (/den/)  
+- 🛠 In progress: XP leveling, faction alignment, currency upgrades  
+- 🧩 Future: Quests, keyboard nav, command-mode interface  
+
+---
+
+## 🗺 Map Architecture
+
+Each **Zone** contains multiple **Locations**, each with:  
+- Name  
+- Description  
+- Connections (graph traversal)  
+- Lore, enemy types, or NPC triggers (planned)
+
+Example:
+```text
+Zone: /deepstack/
+ ├── Stack Overflow Buffer (corrupted logic pit)
+ ├── Patch Spiral Core (entry guarded)
+ └── Thread Mirror (hall of clone echoes)
+```
 
 ---
 
@@ -56,15 +79,18 @@ The ShadowNexus is a fractured digital landscape built on the myth of a forgotte
 ```
 shadownexus/
 ├── game/
-│   ├── models.py       # Player, Post, Enemy, etc.
-│   ├── views.py
-│   ├── forms.py
+│   ├── models.py       # Player, Location, Enemy, Post, etc.
+│   ├── views.py        # Core game logic
+│   ├── forms.py        # Registration + login
 │   ├── templates/
+│   │   ├── game/
+│   │   │   └── explore.html, mainframe.html, ...
 │   │   └── registration/
 │   │       └── register.html
-├── templates/          # base.html and zone UIs
-├── static/             # CSS, fonts, visuals
-├── lore/               # .man files, PDF fragments, logs
+│   ├── static/
+│   │   └── css, fonts, ANSI/ASCII aesthetics
+│   └── lore/
+│       └── .man pages, prophecy fragments, corrupted logs
 ├── manage.py
 └── README.md
 ```
@@ -73,20 +99,17 @@ shadownexus/
 
 ## 📟 Terminal Blessing
 
-```
-> echo "What decays, still runs." >> /dev/eternity
+```bash
+echo "What decays, still runs." >> /dev/eternity
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Feel the hum of old terminals?  
-If you’ve ever patched a system by flashlight or fought off bitrot with a shell script — welcome.
+If you've ever patched a system by flashlight  
+or fought bitrot with a shell script—welcome.
 
-Pull requests, feedback, and lore ideas are all welcome.
-
----
-
-> Created by [@pextris](https://github.com/pextris)  
-> ShadowNexus // root interface active
+Pull requests, issues, and lore contributions are always welcome.  
+Created by **@pextris**  
+_“ShadowNexus // root interface active”_
